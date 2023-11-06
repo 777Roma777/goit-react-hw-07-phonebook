@@ -9,12 +9,12 @@ import Loader from 'components/Loader/loader';
 import {
   selectError,
   selectIsLoading,
-  selectItems,
+  selectVisibleContacts,
 } from 'components/redux/products.selectors';
 import { ErrorMessage } from 'components/Error/errorMessage';
 
 const ContactsList = () => {
-  const contacts = useSelector(selectItems);
+  const contacts = useSelector(selectVisibleContacts);
   const isLoading = useSelector(selectIsLoading);
   const error = useSelector(selectError);
   const dispatch = useDispatch();
@@ -29,7 +29,7 @@ const ContactsList = () => {
       {error && <ErrorMessage message={error} />}
 
       <ul className={css.contactsList}>
-        {contacts !== undefined &&
+        {contacts !== null &&
           contacts.map(contact => (
             <li key={contact.id} className={css.contactsItem}>
               <span className={css.textContact}>
