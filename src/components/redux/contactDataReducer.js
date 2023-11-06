@@ -42,11 +42,8 @@ export const contactDataSlice = createSlice({
   name: 'contacts',
   initialState: INITIAL_STATE,
   reducers: {
-    setContacts(state, action) {
-      state.contacts.items = action.payload;
-    },
     setFilter(state, action) {
-      state.contacts.filter = action.payload;
+      state.filter = action.payload;
     },
   },
   extraReducers: (builder) => {
