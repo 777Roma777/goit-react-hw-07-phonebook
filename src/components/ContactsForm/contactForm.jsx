@@ -1,83 +1,51 @@
-import React from 'react';
+// contactForm.jsx
+
+import React, { useState } from 'react';
 import css from './contactForm.module.css';
-import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from 'components/redux/contactDataReducer';
-import { nanoid } from 'nanoid';
+import { addContactAsync } from 'components/redux/contactDataReducer';
+import Loader from 'components/Loader/loader';
+import { selectError, selectIsLoading } from 'components/redux/products.selectors';
 
 const ContactForm = () => {
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [phone, setPhone] = useState('');
 
-  const contacts = useSelector(state => state.contactsData.contacts);
+  const isLoading = useSelector(selectIsLoading);
+  const error = useSelector(selectError);
   const dispatch = useDispatch();
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    handleAddContact(name, number);
+    handleAddContact(name, phone);
     setName('');
-    setNumber('');
+    setPhone('');
   };
 
-  const handleInputChange = event => {
-    const { name, value } = event.target;
-    if (name === 'name') {
-      setName(value);
-    } else if (name === 'number') {
-      setNumber(value);
-    }
-  };
-
-  const handleAddContact = (name, number) => {
-    if (!name || !number) {
-      
+  const handleAddContact = (name, phone) => {
+    if (!name || !phone) {
       return;
     }
-
-    const isPresent = contacts.some(
-      contact =>
-        contact.name && contact.name.toLowerCase() === name.toLowerCase()
-    );
-
-    if (isPresent) {
-      alert(`${name} is already in contacts! Please enter a different name`);
-      return;
-    }
-
-    const newContact = {
-      id: nanoid(),
-      name: name,
-      number: number,
-    };
-    dispatch(addContact(newContact));
+    dispatch(addContactAsync({ name, phone }));
   };
 
   return (
-    <form className={css.form} onSubmit={handleSubmit}>
-      <label className={css.label}>
-        <p className={css.descriptionInput}>Name</p>
-        <input
-          onChange={handleInputChange}
-          value={name}
-          type="text"
-          name="name"
-          required
-        />
-      </label>
-      <label className={css.label}>
-        <p className={css.descriptionInput}>Number</p>
-        <input
-          onChange={handleInputChange}
-          value={number}
-          type="tel"
-          name="number"
-          required
-        ></input>
-      </label>
-      <button className={css.button} type="submit">
-        Add contact
-      </button>
-    </form>
+    <div>
+      <form className={css.form} onSubmit={handleSubmit}>
+        <label className={css.label}>
+          <p className={css.descriptionInput}>Name</p>
+          <input onChange={(e) => setName(e.target.value)} value={name} type="text" name="name" required />
+        </label>
+        <label className={css.label}>
+          <p className={css.descriptionInput}>Phone</p>
+          <input onChange={(e) => setPhone(e.target.value)} value={phone} type="tel" name="phone" required />
+        </label>
+        <button className={css.button} type="submit">
+          {isLoading ? <Loader /> : 'Add contact'}
+        </button>
+      </form>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+    </div>
   );
 };
 
